@@ -27,28 +27,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 
-fun main() = application {
-    val store = remember { FileViewerStore() }
-    val state by store.state.collectAsState()
-
-    Window(
-        title = "File Viewer for LLM Prompts",
-        onCloseRequest = ::exitApplication
-    ) {
-        MaterialTheme {
-          //  FileViewerApp(state, store::dispatch)
-            val scope = rememberCoroutineScope()
-            FileViewerApp(
-                state = state,
-                dispatch = { action ->
-                    scope.launch {
-                        store.dispatch(action)
-                    }
-                }
-            )
-        }
-    }
-}
 
 
 @Composable
@@ -142,100 +120,6 @@ fun FileViewerApp(
 }
 
 
-
-//@Composable
-//fun Toolbar(
-//    onSelectDirectory: () -> Unit,
-//    onExpandAll: () -> Unit,
-//    onCollapseAll: () -> Unit,
-//    onSelectAll: () -> Unit,
-//    onDeselectAll: () -> Unit,
-//    onClear: () -> Unit
-//) {
-//    Row(
-//        modifier = Modifier.fillMaxWidth(),
-//        horizontalArrangement = Arrangement.SpaceBetween
-//    ) {
-//        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-//            Button(onClick = onSelectDirectory) {
-//                Text("Select Directory")
-//            }
-////
-////            ButtonGroup {
-////                IconButton(onClick = onExpandAll) {
-////                    Icon(Icons.Default.ExpandMore, "Expand All")
-////                }
-////                IconButton(onClick = onCollapseAll) {
-////                    Icon(Icons.Default.ChevronRight, "Collapse All")
-////                }
-////            }
-////
-////            ButtonGroup {
-////                IconButton(onClick = onSelectAll) {
-////                    Icon(Icons.Default.CheckBox, "Select All")
-////                }
-////                IconButton(onClick = onDeselectAll) {
-////                    Icon(Icons.Default.CheckBoxOutlineBlank, "Deselect All")
-////                }
-////            }
-//
-//
-//            // 替换 ButtonGroup 为 Row，添加边框样式
-//            Surface(
-//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-//                shape = RoundedCornerShape(4.dp)
-//            ) {
-//                Row {
-//                    IconButton(onClick = onExpandAll) {
-//                        Icon(Icons.Default.ExpandMore, contentDescription = "Expand All")
-//                    }
-//                    Divider(
-//                        modifier = Modifier
-//                            .width(1.dp)
-//                            .height(24.dp)
-//                            .align(Alignment.CenterVertically),
-//                        color = MaterialTheme.colorScheme.outline
-//                    )
-//                    IconButton(onClick = onCollapseAll) {
-//                        Icon(Icons.Default.ChevronRight, contentDescription = "Collapse All")
-//                    }
-//                }
-//            }
-//
-//            // 第二组按钮
-//            Surface(
-//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-//                shape = RoundedCornerShape(4.dp)
-//            ) {
-//                Row {
-//                    IconButton(onClick = onSelectAll) {
-//                        Icon(Icons.Default.CheckBox, contentDescription = "Select All")
-//                    }
-//                    Divider(
-//                        modifier = Modifier
-//                            .width(1.dp)
-//                            .height(24.dp)
-//                            .align(Alignment.CenterVertically),
-//                        color = MaterialTheme.colorScheme.outline
-//                    )
-//                    IconButton(onClick = onDeselectAll) {
-//                        Icon(Icons.Default.CheckBoxOutlineBlank, contentDescription = "Deselect All")
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//        IconButton(
-//            onClick = onClear,
-//            colors = IconButtonDefaults.iconButtonColors(
-//                contentColor = MaterialTheme.colorScheme.error
-//            )
-//        ) {
-//            Icon(Icons.Default.Clear, "Clear")
-//        }
-//    }
-//}
 
 @Composable
 fun Toolbar(
@@ -439,6 +323,10 @@ fun FileTreePanel(
         }
     }
 }
+
+
+
+
 
 @Composable
 private fun EmptyStateMessage() {
