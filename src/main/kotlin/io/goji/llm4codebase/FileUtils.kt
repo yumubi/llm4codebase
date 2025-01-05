@@ -73,6 +73,7 @@ object FileUtils {
             file.name.lowercase().endsWith(".pdf") -> true
             else -> runCatching {
                 val bytes = file.readBytes().take(4096)
+
                 val text = String(bytes.toByteArray(), StandardCharsets.UTF_8)
                 val printableChars = text.count { it in ' '..'}' || it == '\n' || it == '\r' || it == '\t' }
                 printableChars.toDouble() / bytes.size > 0.7

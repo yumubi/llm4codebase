@@ -1,6 +1,7 @@
 package io.goji.llm4codebase
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.*
@@ -53,10 +56,6 @@ fun FileViewerApp(
     state: FileViewerState,
     dispatch: suspend (FileViewerState.() -> FileViewerState) -> Unit
 ) {
-
-
-
-
     // 创建协程作用域
     val coroutineScope  = rememberCoroutineScope()
 
@@ -144,6 +143,100 @@ fun FileViewerApp(
 
 
 
+//@Composable
+//fun Toolbar(
+//    onSelectDirectory: () -> Unit,
+//    onExpandAll: () -> Unit,
+//    onCollapseAll: () -> Unit,
+//    onSelectAll: () -> Unit,
+//    onDeselectAll: () -> Unit,
+//    onClear: () -> Unit
+//) {
+//    Row(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalArrangement = Arrangement.SpaceBetween
+//    ) {
+//        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+//            Button(onClick = onSelectDirectory) {
+//                Text("Select Directory")
+//            }
+////
+////            ButtonGroup {
+////                IconButton(onClick = onExpandAll) {
+////                    Icon(Icons.Default.ExpandMore, "Expand All")
+////                }
+////                IconButton(onClick = onCollapseAll) {
+////                    Icon(Icons.Default.ChevronRight, "Collapse All")
+////                }
+////            }
+////
+////            ButtonGroup {
+////                IconButton(onClick = onSelectAll) {
+////                    Icon(Icons.Default.CheckBox, "Select All")
+////                }
+////                IconButton(onClick = onDeselectAll) {
+////                    Icon(Icons.Default.CheckBoxOutlineBlank, "Deselect All")
+////                }
+////            }
+//
+//
+//            // 替换 ButtonGroup 为 Row，添加边框样式
+//            Surface(
+//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+//                shape = RoundedCornerShape(4.dp)
+//            ) {
+//                Row {
+//                    IconButton(onClick = onExpandAll) {
+//                        Icon(Icons.Default.ExpandMore, contentDescription = "Expand All")
+//                    }
+//                    Divider(
+//                        modifier = Modifier
+//                            .width(1.dp)
+//                            .height(24.dp)
+//                            .align(Alignment.CenterVertically),
+//                        color = MaterialTheme.colorScheme.outline
+//                    )
+//                    IconButton(onClick = onCollapseAll) {
+//                        Icon(Icons.Default.ChevronRight, contentDescription = "Collapse All")
+//                    }
+//                }
+//            }
+//
+//            // 第二组按钮
+//            Surface(
+//                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+//                shape = RoundedCornerShape(4.dp)
+//            ) {
+//                Row {
+//                    IconButton(onClick = onSelectAll) {
+//                        Icon(Icons.Default.CheckBox, contentDescription = "Select All")
+//                    }
+//                    Divider(
+//                        modifier = Modifier
+//                            .width(1.dp)
+//                            .height(24.dp)
+//                            .align(Alignment.CenterVertically),
+//                        color = MaterialTheme.colorScheme.outline
+//                    )
+//                    IconButton(onClick = onDeselectAll) {
+//                        Icon(Icons.Default.CheckBoxOutlineBlank, contentDescription = "Deselect All")
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        IconButton(
+//            onClick = onClear,
+//            colors = IconButtonDefaults.iconButtonColors(
+//                contentColor = MaterialTheme.colorScheme.error
+//            )
+//        ) {
+//            Icon(Icons.Default.Clear, "Clear")
+//        }
+//    }
+//}
+
 @Composable
 fun Toolbar(
     onSelectDirectory: () -> Unit,
@@ -155,78 +248,83 @@ fun Toolbar(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Button(onClick = onSelectDirectory) {
-                Text("Select Directory")
-            }
-//
-//            ButtonGroup {
-//                IconButton(onClick = onExpandAll) {
-//                    Icon(Icons.Default.ExpandMore, "Expand All")
-//                }
-//                IconButton(onClick = onCollapseAll) {
-//                    Icon(Icons.Default.ChevronRight, "Collapse All")
-//                }
-//            }
-//
-//            ButtonGroup {
-//                IconButton(onClick = onSelectAll) {
-//                    Icon(Icons.Default.CheckBox, "Select All")
-//                }
-//                IconButton(onClick = onDeselectAll) {
-//                    Icon(Icons.Default.CheckBoxOutlineBlank, "Deselect All")
-//                }
-//            }
-
-
-            // 替换 ButtonGroup 为 Row，添加边框样式
-            Surface(
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                shape = RoundedCornerShape(4.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 选择目录按钮
+            FilledTonalButton(
+                onClick = onSelectDirectory,
+                modifier = Modifier.height(36.dp)
             ) {
-                Row {
-                    IconButton(onClick = onExpandAll) {
-                        Icon(Icons.Default.ExpandMore, contentDescription = "Expand All")
-                    }
-                    Divider(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(24.dp)
-                            .align(Alignment.CenterVertically),
-                        color = MaterialTheme.colorScheme.outline
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.Folder,
+                        contentDescription = "Select Directory",
+                        modifier = Modifier.size(18.dp)
                     )
-                    IconButton(onClick = onCollapseAll) {
-                        Icon(Icons.Default.ChevronRight, contentDescription = "Collapse All")
-                    }
+                    Text("Select Directory")
                 }
             }
 
-            // 第二组按钮
-            Surface(
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                shape = RoundedCornerShape(4.dp)
+            // 展开/折叠按钮组
+            ButtonGroup(
+                modifier = Modifier.height(36.dp)
             ) {
-                Row {
-                    IconButton(onClick = onSelectAll) {
-                        Icon(Icons.Default.CheckBox, contentDescription = "Select All")
-                    }
-                    Divider(
-                        modifier = Modifier
-                            .width(1.dp)
-                            .height(24.dp)
-                            .align(Alignment.CenterVertically),
-                        color = MaterialTheme.colorScheme.outline
+                IconButton(
+                    onClick = onExpandAll,
+                    modifier = Modifier.size(36.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface
                     )
-                    IconButton(onClick = onDeselectAll) {
-                        Icon(Icons.Default.CheckBoxOutlineBlank, contentDescription = "Deselect All")
-                    }
+                ) {
+                    Icon(
+                        Icons.Default.ExpandMore,
+                        contentDescription = "Expand All",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                IconButton(
+                    onClick = onCollapseAll,
+                    modifier = Modifier.size(36.dp),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Icon(
+                        Icons.Default.ChevronRight,
+                        contentDescription = "Collapse All",
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
 
+            // 全选/取消全选按钮组
+            ButtonGroup(
+                modifier = Modifier.height(36.dp)
+            ) {
+                ButtonGroupItem(
+                    onClick = onSelectAll,
+                    icon = Icons.Default.SelectAll,
+                    text = "Select All",
+                    isFirst = true
+                )
+                ButtonGroupItem(
+                    onClick = onDeselectAll,
+                    icon = Icons.Default.IndeterminateCheckBox ,
+                    text = "Deselect All",
+                    isFirst = false
+                )
+            }
         }
 
+        // 清除按钮
         IconButton(
             onClick = onClear,
             colors = IconButtonDefaults.iconButtonColors(
@@ -238,6 +336,74 @@ fun Toolbar(
     }
 }
 
+@Composable
+private fun ButtonGroup(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(4.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.12f))
+    ) {
+        Row {
+            content()
+        }
+    }
+}
+
+@Composable
+private fun ButtonGroupItem(
+    onClick: () -> Unit,
+    icon: ImageVector,
+    text: String,
+    isFirst: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = Modifier.height(36.dp)) {
+        if (!isFirst) {
+            VerticalDivider(
+                modifier = Modifier.height(36.dp),
+                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+            )
+        }
+
+        TextButton(
+            onClick = onClick,
+            modifier = modifier.height(36.dp),
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = text,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(
+                    text,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun VerticalDivider(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.outline
+) {
+    Box(
+        modifier = modifier
+            .width(1.dp)
+            .background(color)
+    )
+}
 
 @Composable
 fun FileTreePanel(
@@ -254,16 +420,7 @@ fun FileTreePanel(
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         if (root == null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    "Select a directory to view its contents",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+            EmptyStateMessage()
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(8.dp)
@@ -283,6 +440,30 @@ fun FileTreePanel(
     }
 }
 
+@Composable
+private fun EmptyStateMessage() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Folder,
+                contentDescription = null,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                "Select a directory to view its contents",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
 
 
 

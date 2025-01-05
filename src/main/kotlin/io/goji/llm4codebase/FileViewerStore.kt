@@ -2,29 +2,51 @@ package io.goji.llm4codebase
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.io.File
 
 
 class FileViewerStore {
+
+
     private val _state = MutableStateFlow(FileViewerState())
     val state: StateFlow<FileViewerState> = _state.asStateFlow()
-
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    private val saveDebounceTime = 500L // 添加防抖时间
+    private var saveJob: Job? = null
 
     fun dispatch(action: suspend FileViewerState.() -> FileViewerState) {
         scope.launch {
             _state.update { state ->
-                state.action()
+                state.action().also { newState ->
+                    // 更新统计信息
+                    updateStats(newState)
+                }
             }
+            debounceSaveState()
+        }
+    }
+
+
+    private fun debounceSaveState() {
+        saveJob?.cancel()
+        saveJob = scope.launch {
+            delay(saveDebounceTime)
             saveState()
+        }
+    }
+
+    private fun updateStats(state: FileViewerState) {
+        val selectedCount = state.selectedPaths.size
+        val totalTokens = state.selectedPaths.sumOf { path ->
+            state.fileContents[path]?.let { Utils.calculateTokens(it) } ?: 0
+        }
+        _state.update {
+            it.copy(stats = Stats(selectedCount, totalTokens))
         }
     }
 
@@ -59,13 +81,6 @@ class FileViewerStore {
                 .add(KotlinJsonAdapterFactory())
                 .build()
 
-//            val savedState = moshi.adapter<Map<String, List<String>>>()
-//                .fromJson(json) ?: return FileViewerState()
-//
-//            FileViewerState(
-//                selectedPaths = savedState["selectedPaths"]?.toSet() ?: emptySet(),
-//                expandedNodes = savedState["expandedNodes"]?.toSet() ?: emptySet()
-//            )
 
             moshi.adapter(SavedFileViewerState::class.java)
                 .fromJson(json) ?: SavedFileViewerState()
